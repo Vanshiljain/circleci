@@ -1,25 +1,26 @@
-name: test-extended-configs
-on: [pull_request]
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # TODO add an action workflow to ensure every file in .circleci/extended appears in this list
-        configfile: ["heroku-deploy"]
+
     steps:
-    - name: checkout
+    - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: Replace config
-      run: cp .circleci/extended/${{ matrix.configfile }}.yml .circleci/config.yml
-    - name: commit-push_branch-test
-      uses: dsayling/commit-branch-check-action@v0.0.8
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        files: ".circleci/config.yml"
-        commit-message: "Update circleci config for ${{ matrix.configfile }} from ${{github.event.pull_request.head.ref}}"
-        dest-branch: ${{github.event.pull_request.head.ref}}-${{ matrix.configfile }}
-        verify-checks: true
-        delete-after-checks: true
+
+    - name: Install Dependencies
+      run: |
+        npm install
+
+    - name: Run Tests
+      run: |
+        npm test
+
+    - name: Build
+      run: |
+        npm run build
