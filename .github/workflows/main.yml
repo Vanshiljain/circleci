@@ -1,4 +1,4 @@
-name: Fetch Logs Example
+name: CI/CD
 
 on:
   push:
@@ -10,40 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Your build steps go here
+    - name: Install Dependencies
+      run: |
+        npm install
 
-      - name: Upload logs as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-logs
-          path: |
-           C:/Users/LENOVO/Desktop/circleci/circleci
+    - name: Run Tests
+      run: |
+        npm test
 
+    - name: Build
+      run: |
+        npm run build
+
+    # Add this step to upload logs as an artifact
+    - name: Upload Logs
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-logs
+        path: |
+          C:/Users/LENOVO/Desktop/circleci/circleci/logs
+          
+# Add a new workflow to fetch the logs
+jobs:
   fetch-logs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Fetch logs
-        run: |
-          RUN_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs?event=push" \
-            | jq -r '.workflow_runs[0].id')
-
-          ARTIFACT_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts" \
-            | jq -r '.artifacts[0].id')
-
-          curl -LJO -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID/zip"
-
-          unzip -q build-logs.zip -d fetched-logs
-
-      - name: Display logs
-        run: |
-          cat fetched-logs C:/Users/LENOVO/Desktop/circleci/circleci*.log
+    - name: Download Logs
+      uses: actions/download-artifact@v2
+      with:
+        name: build-logs
+        path: logs  # Specify the directory where you want to download the logs
