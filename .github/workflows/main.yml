@@ -31,10 +31,9 @@ jobs:
       with:
         name: build-logs
         path: |
-          C:/Users/LENOVO/Desktop/circleci/logs
+         C:/Users/LENOVO/Desktop/circleci/logs
           
 # Add a new workflow to fetch the logs
-jobs:
   fetch-logs:
     runs-on: ubuntu-latest
 
