@@ -42,4 +42,4 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: build-logs
-        path: logs  # Specify the directory where you want to download the logs
+        path: C:\Users\LENOVO\Desktop\circleci\circleci\logs
