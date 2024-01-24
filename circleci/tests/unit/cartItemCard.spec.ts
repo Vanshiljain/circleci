@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import CartItemCard from "@/components/CartItemCard.vue";
-
+ 
 describe("CartItemCard.vue", () => {
   it("renders the menuItem prop data", () => {
     const menuItem = {
